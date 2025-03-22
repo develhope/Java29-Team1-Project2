@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev  # Ogni utente può sovrascrivere questo valore con variabili d'ambiente o VM options
+    active: dev  # Cambiare con (ema-gio-luca)
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
