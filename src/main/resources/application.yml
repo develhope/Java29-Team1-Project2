@@ -1,0 +1,14 @@
+spring:
+  profiles:
+    active: dev  # Ogni utente può sovrascrivere questo valore con variabili d'ambiente o VM options
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update  # "create-drop" è rischioso perché cancella i dati ad ogni avvio
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
