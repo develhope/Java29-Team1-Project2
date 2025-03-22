@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev  # Cambiare con (ema-gio-luca)
+    active: dev  # Cambiare con  (ema-gio-luca)
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
