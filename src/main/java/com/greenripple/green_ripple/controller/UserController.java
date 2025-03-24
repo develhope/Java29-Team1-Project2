@@ -37,53 +37,62 @@ public class UserController {
     // Get user by email (for login purposes)
     @GetMapping("/get-by-email/{email}")
     public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
-        try {
-            Optional<User> user = userService.getUserByEmail(email);
-            return ResponseEntity.ok(user.get()); // Se utente trovato
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Se eccezione sollevata
+        Optional<User> user = userService.getUserByEmail(email);
+
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user.get());
         }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     // Get user by ID (profile retrieval)
     @GetMapping("/get-by-id/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        try {
-            Optional<User> user = userService.getUserById(id);
-            return ResponseEntity.ok(user.get()); // Se utente trovato
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Se eccezione sollevata
+        Optional<User> user = userService.getUserById(id);
+
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user.get());
         }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     // Update an existing user profile
     @PutMapping("/update/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
-        try {
-            Optional<User> optionalUser = userService.updateUser(id, updatedUser);  // Chiamata al service
+        Optional<User> optionalUser = userService.updateUser(id, updatedUser);
 
-            if (optionalUser.isPresent()) {
-                return ResponseEntity.ok(optionalUser.get());  // Se l'utente esiste, ritorna il risultato
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Se utente non trovato
-            }
-        } catch (UserNotFoundException e) {
-            // (return 404)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        if (optionalUser.isPresent()) {
+            return ResponseEntity.ok(optionalUser.get());
         }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-    // Update the green points for a user
-    @PutMapping("/update-green-points/{id}")
-    public ResponseEntity<User> updateGreenPoints(@PathVariable Long id, @RequestParam int points) {
+    // Increase the green points for a user
+    @PutMapping("/increase-green-points/{id}")
+    public ResponseEntity<User> increaseGreenPoints(@PathVariable Long id, @RequestParam int points) {
+        Optional<User> updatedUser = userService.increaseGreenPoints(id, points);
+
+        if (updatedUser.isPresent()) {
+            return ResponseEntity.ok(updatedUser.get());
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    // Decrease the green points for a user
+    @PutMapping("/decrease-green-points/{id}")
+    public ResponseEntity<Optional<User>> decreasePoints(@PathVariable Long id, @RequestParam int points) {
         try {
-            User updatedUser = userService.updateGreenPoints(id, points);
+            Optional<User> updatedUser = userService.decreaseGreenPoints(id, points);
             return ResponseEntity.ok(updatedUser);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
-
+    
     // Login user with simplified Base64 authentication
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestParam String email, @RequestParam String password) {
@@ -98,22 +107,24 @@ public class UserController {
     // Soft delete a user (set isDeleted to true)
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
-        try {
-            userService.deleteUser(id);
+        boolean deleted = userService.deleteUser(id);
+
+        if (deleted) {
             return ResponseEntity.ok("User deleted successfully");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
     }
 
     // Restore a deleted user (set isDeleted to false)
     @PutMapping("/restore/{id}")
     public ResponseEntity<String> restoreUser(@PathVariable Long id) {
-        try {
-            userService.restoreUser(id);
+        boolean restored = userService.restoreUser(id);
+
+        if (restored) {
             return ResponseEntity.ok("User restored successfully");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
     }
 }

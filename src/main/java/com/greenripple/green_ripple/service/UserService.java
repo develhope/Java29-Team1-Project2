@@ -21,29 +21,20 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    // Get all users, excluding logically deleted users (where isDeleted is true)
+    // Get all users, excluding logically deleted users
     public List<User> getAllUsers() {
-        return userRepository.findAll().stream()
-                .filter(user -> !user.isDeleted())  // Filter out logically deleted users
-                .collect(Collectors.toList());
+        // Method to get only non-deleted users
+        return userRepository.findByIsDeletedFalse();
     }
 
     // Retrieve a user by email (for login)
     public Optional<User> getUserByEmail(String email) {
-        Optional<User> user = userRepository.findByEmail(email);
-        if (user.isEmpty()) {
-            throw new UserNotFoundException("User with email " + email + " not found");
-        }
-        return user;
+        return userRepository.findByEmailAndIsDeletedFalse(email); // Modified to avoid exception
     }
 
     // Retrieve a user by ID (profile)
     public Optional<User> getUserById(Long id) {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isEmpty()) {
-            throw new UserNotFoundException("User with ID " + id + " not found");
-        }
-        return user;
+        return userRepository.findById(id);
     }
 
     // Update an existing user profile
@@ -51,30 +42,44 @@ public class UserService {
         Optional<User> existingUser = userRepository.findById(id);
 
         if (existingUser.isPresent()) {
-
             existingUser.get().setName(updatedUser.getName());
             existingUser.get().setEmail(updatedUser.getEmail());
             existingUser.get().setPassword(updatedUser.getPassword());
             existingUser.get().setCity(updatedUser.getCity());
 
             User userSaved = userRepository.save(existingUser.get());
-
-            // Update additional fields if needed
             return Optional.of(userSaved);
         }
-        // If user is not found, throw a custom exception
-        throw new UserNotFoundException("User with ID " + id + " not found");
+        return Optional.empty();
     }
 
-    // Update the green points for a user
-    public User updateGreenPoints(Long id, int points) {
+    // Increment green points for a user
+    public Optional<User> increaseGreenPoints(Long id, int points) {
+        Optional<User> userOpt = userRepository.findById(id);
+
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+
+            // Increment green points
+            user.setGreenPoints(user.getGreenPoints() + points);
+
+            userRepository.save(user);
+
+            return Optional.of(user);
+        }
+        return Optional.empty();
+    }
+
+    // Decrement green points for a user
+    public Optional<User> decreaseGreenPoints(Long id, int points) {
         Optional<User> userOpt = userRepository.findById(id);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            user.setGreenPoints(points);
-            return userRepository.save(user);
+            user.setGreenPoints(user.getGreenPoints() - points);  // Decrease green points
+            userRepository.save(user);  // Save updated user
+            return Optional.of(user);
         }
-        throw new RuntimeException("User not found");
+        return Optional.empty();  // Return empty if user not found
     }
 
     // Login user with simplified Base64 authentication
@@ -83,7 +88,7 @@ public class UserService {
     // the concatenated string "mariorossi@example.com:securepass" is encoded into Base64.
     // The result would be "bWFyaW9yb3NzQGV4YW1wbGUuY29tOnNlY3VyZXBhc3M=" which serves as the token for authentication.
 
-    public  Map<String, String> login(String email, String password) {
+    public Map<String, String> login(String email, String password) {
         Optional<User> userOpt = userRepository.findByEmail(email);
         if (userOpt.isPresent()) {
             User user = userOpt.get();
@@ -102,29 +107,34 @@ public class UserService {
     }
 
     // Soft delete a user (set isDeleted to true)
-    public void deleteUser(Long id) {
+    public boolean deleteUser(Long id) {
         Optional<User> userOpt = userRepository.findById(id);
+
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             user.setDeleted(true);  // Logically delete by setting isDeleted to true
-            userRepository.save(user); // Save the user with updated status
-        } else {
-            throw new RuntimeException("User not found");
+            userRepository.save(user);
+            return true; // Indica che l'utente è stato eliminato con successo
         }
+
+        return false; // Indica che l'utente non è stato trovato
     }
 
     // Restore a deleted user (set isDeleted to false)
-    public void restoreUser(Long id) {
+    public boolean restoreUser(Long id) {
         Optional<User> userOpt = userRepository.findById(id);
+
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             user.setDeleted(false);  // Mark the user as not deleted
             userRepository.save(user);
-        } else {
-            throw new RuntimeException("User not found");
+            return true; // Indica che l'utente è stato ripristinato con successo
         }
 
-        // Retrieve a dummy user activity history
+        return false; // Indica che l'utente non è stato trovato
+    }
+
+    // Retrieve a dummy user activity history
 //    public List<String> getUserActivityHistory(Long id) {
 //        // In a real application, activities would be retrieved from a log or a dedicated data source.
 //        return Arrays.asList("Registration", "Login", "Profile Update", "Green Points Added");
@@ -137,5 +147,6 @@ public class UserService {
 //        dashboard.put("EnergyProduced", 3500);    // Dummy value
 //        return dashboard;
 //    }
-    }
+
+
 }

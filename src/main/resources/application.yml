@@ -1,13 +1,16 @@
+server:
+  port: 9091
+
+driver-class-name: com.mysql.cj.jdbc.Driver
 spring:
-  profiles:
-    active: dev  # Cambiare con (ema-gio-luca)
-
   datasource:
+    url: jdbc:mysql://localhost:3306/greenripple
+    username:
+    password:
     driver-class-name: com.mysql.cj.jdbc.Driver
-
   jpa:
     hibernate:
-      ddl-auto: update  # "create-drop" è rischioso perché cancella i dati ad ogni avvio
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
