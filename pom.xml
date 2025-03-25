@@ -10,10 +10,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 
-	<groupId>com.greenripple</groupId>
-	<artifactId>green-ripple</artifactId>
+	<groupId>com.develhope</groupId>
+	<artifactId>greenripple</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>green-ripple</name>
+	<name>greenripple</name>
 	<description>Green Ripple Project</description>
 
 	<properties>

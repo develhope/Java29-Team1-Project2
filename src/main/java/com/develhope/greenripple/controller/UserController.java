@@ -1,9 +1,7 @@
-package com.greenripple.green_ripple.controller;
+package com.develhope.greenripple.controller;
 
-import com.greenripple.green_ripple.exceptions.UserNotFoundException;
-import com.greenripple.green_ripple.model.User;
-import com.greenripple.green_ripple.service.UserService;
-import jakarta.persistence.EntityNotFoundException;
+import com.develhope.greenripple.model.User;
+import com.develhope.greenripple.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

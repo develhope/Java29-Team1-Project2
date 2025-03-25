@@ -1,13 +1,11 @@
-package com.greenripple.green_ripple.service;
+package com.develhope.greenripple.service;
 
-import com.greenripple.green_ripple.exceptions.UserNotFoundException;
-import com.greenripple.green_ripple.model.User;
-import com.greenripple.green_ripple.repository.UserRepository;
+import com.develhope.greenripple.model.User;
+import com.develhope.greenripple.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 // Service class for handling User business logic
 @Service

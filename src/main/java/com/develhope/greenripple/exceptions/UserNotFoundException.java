@@ -1,4 +1,4 @@
-package com.greenripple.green_ripple.exceptions;
+package com.develhope.greenripple.exceptions;
 
 public class UserNotFoundException extends RuntimeException{
     public UserNotFoundException(String message) {

@@ -1,4 +1,4 @@
-package com.greenripple.green_ripple.dto;
+package com.develhope.greenripple.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;

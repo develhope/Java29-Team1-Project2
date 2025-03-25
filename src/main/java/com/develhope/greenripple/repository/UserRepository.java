@@ -1,6 +1,6 @@
-package com.greenripple.green_ripple.repository;
+package com.develhope.greenripple.repository;
 
-import com.greenripple.green_ripple.model.User;
+import com.develhope.greenripple.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

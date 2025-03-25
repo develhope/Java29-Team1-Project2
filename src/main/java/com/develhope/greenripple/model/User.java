@@ -1,4 +1,4 @@
-package com.greenripple.green_ripple.model;
+package com.develhope.greenripple.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
