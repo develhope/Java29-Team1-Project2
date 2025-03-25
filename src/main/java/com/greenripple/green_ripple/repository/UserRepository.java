@@ -11,6 +11,8 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    // Optional method to find user by email
     Optional<User> findByEmail(String email);
 
     // Optional method to find non-deleted users
