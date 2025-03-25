@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
+
 // Entity representing a User
 @Entity
 @Table(name = "users")
@@ -43,6 +45,9 @@ public class User {
     // Add a field to indicate if the user is logically deleted
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;  // Default is false (not deleted)
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private List<Activity> activities;
 
     // Constructors
     public User() {}
