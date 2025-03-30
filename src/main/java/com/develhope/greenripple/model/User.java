@@ -5,6 +5,9 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.ArrayList;
+import java.util.List;
+
 // Entity representing a User
 @Entity
 @Table(name = "users")
@@ -44,14 +47,22 @@ public class User {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;  // Default is false (not deleted)
 
+   // One-to-Many relationship: A user can redeem multiple rewards
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserReward> redeemedRewards;
+
     // Constructors
     public User() {}
 
-    public User(String name, String email, String password, String city) {
+    public User(Long id, String name, String email, String password, String city, int greenPoints, int votes, boolean isDeleted) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.city = city;
+        this.greenPoints = greenPoints;
+        this.votes = votes;
+        this.isDeleted = isDeleted;
     }
 
     // Getters and Setters

@@ -14,28 +14,48 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    // Create a new user (registration)
+    /**
+     * Creates a new user (registration).
+     * @param user The user object to be created.
+     * @return The saved user object.
+     */
     public User createUser(User user) {
         return userRepository.save(user);
     }
 
-    // Get all users, excluding logically deleted users
+    /**
+     * Retrieves all users, excluding those that have been logically deleted.
+     * @return A list of active users.
+     */
     public List<User> getAllUsers() {
         // Method to get only non-deleted users
         return userRepository.findByIsDeletedFalse();
     }
 
-    // Retrieve a user by email (for login)
+    /**
+     * Retrieves a user by email (used for login purposes).
+     * @param email The email of the user.
+     * @return An optional containing the user if found.
+     */
     public Optional<User> getUserByEmail(String email) {
         return userRepository.findByEmailAndIsDeletedFalse(email); // Modified to avoid exception
     }
 
-    // Retrieve a user by ID (profile)
+    /**
+     * Retrieves a user by ID (for profile lookup).
+     * @param id The ID of the user.
+     * @return An optional containing the user if found.
+     */
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
-    // Update an existing user profile
+    /**
+     * Updates an existing user's profile.
+     * @param id The ID of the user to be updated.
+     * @param updatedUser The updated user information.
+     * @return An optional containing the updated user if found.
+     */
     public Optional<User> updateUser(Long id, User updatedUser) {
         Optional<User> existingUser = userRepository.findById(id);
 
@@ -51,12 +71,17 @@ public class UserService {
         return Optional.empty();
     }
 
-    // Increment green points for a user
+    /**
+     * Increases a user's green points.
+     * @param id The ID of the user.
+     * @param points The number of green points to add.
+     * @return An optional containing the updated user if found.
+     */
     public Optional<User> increaseGreenPoints(Long id, int points) {
-        Optional<User> userOpt = userRepository.findById(id);
+        Optional<User> userOptional = userRepository.findById(id);
 
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
 
             // Increment green points
             user.setGreenPoints(user.getGreenPoints() + points);
@@ -68,11 +93,16 @@ public class UserService {
         return Optional.empty();
     }
 
-    // Decrement green points for a user
+    /**
+     * Decreases a user's green points.
+     * @param id The ID of the user.
+     * @param points The number of green points to subtract.
+     * @return An optional containing the updated user if found.
+     */
     public Optional<User> decreaseGreenPoints(Long id, int points) {
-        Optional<User> userOpt = userRepository.findById(id);
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
             user.setGreenPoints(user.getGreenPoints() - points);  // Decrease green points
             userRepository.save(user);  // Save updated user
             return Optional.of(user);
@@ -80,16 +110,17 @@ public class UserService {
         return Optional.empty();  // Return empty if user not found
     }
 
-    // Login user with simplified Base64 authentication
-    // Example:
-    // If the user's email is "mariorossi@example.com" and the password is "securepass",
-    // the concatenated string "mariorossi@example.com:securepass" is encoded into Base64.
-    // The result would be "bWFyaW9yb3NzQGV4YW1wbGUuY29tOnNlY3VyZXBhc3M=" which serves as the token for authentication.
-
+    /**
+     * Authenticates a user using Base64 encoded credentials.
+     * @param email The user's email.
+     * @param password The user's password.
+     * @return A map containing the authentication token if successful.
+     * @throws RuntimeException If the credentials are invalid or the user is not found.
+     */
     public Map<String, String> login(String email, String password) {
-        Optional<User> userOpt = userRepository.findByEmail(email);
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
+        Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
             if (user.getPassword().equals(password)) {
                 String token = Base64.getEncoder().encodeToString((email + ":" + password).getBytes());
 
@@ -104,12 +135,16 @@ public class UserService {
         throw new RuntimeException("User not found");
     }
 
-    // Soft delete a user (set isDeleted to true)
+    /**
+     * Soft deletes a user by setting isDeleted to true.
+     * @param id The ID of the user to delete.
+     * @return True if the user was found and deleted, false otherwise.
+     */
     public boolean deleteUser(Long id) {
-        Optional<User> userOpt = userRepository.findById(id);
+        Optional<User> userOptional = userRepository.findById(id);
 
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
             user.setDeleted(true);  // Logically delete by setting isDeleted to true
             userRepository.save(user);
             return true; // Indica che l'utente è stato eliminato con successo
@@ -118,12 +153,16 @@ public class UserService {
         return false; // Indica che l'utente non è stato trovato
     }
 
-    // Restore a deleted user (set isDeleted to false)
+    /**
+     * Restores a previously deleted user by setting isDeleted to false.
+     * @param id The ID of the user to restore.
+     * @return True if the user was found and restored, false otherwise.
+     */
     public boolean restoreUser(Long id) {
-        Optional<User> userOpt = userRepository.findById(id);
+        Optional<User> userOptional = userRepository.findById(id);
 
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
             user.setDeleted(false);  // Mark the user as not deleted
             userRepository.save(user);
             return true; // Indica che l'utente è stato ripristinato con successo
