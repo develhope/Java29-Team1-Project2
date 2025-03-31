@@ -51,6 +51,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserReward> redeemedRewards;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private List<Activity> activities;
+
     // Constructors
     public User() {}
 
