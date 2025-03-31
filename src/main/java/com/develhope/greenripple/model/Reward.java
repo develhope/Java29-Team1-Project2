@@ -1,5 +1,6 @@
 package com.develhope.greenripple.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -30,6 +31,7 @@ public class Reward {
     private int quantity;
 
     // One-to-Many relationship: A reward can be redeemed multiple times by different users
+    @JsonIgnore
     @OneToMany(mappedBy = "reward", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserReward> redeemedByUsers;
 

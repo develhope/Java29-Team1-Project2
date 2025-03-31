@@ -2,8 +2,10 @@ package com.develhope.greenripple.model;
 
 import com.develhope.greenripple.enumerations.ActivityType;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @Entity
@@ -18,8 +20,8 @@ public class Activity {
     private String name;
 
     @Column(name = "date")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssXXX", timezone = "UTC")
-    private OffsetDateTime date;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime date;
 
     @Column(name = "produced_energy")
     private Long producedEnergy;
@@ -31,6 +33,7 @@ public class Activity {
     @Enumerated(value = EnumType.STRING)
     private ActivityType activityType;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -38,7 +41,7 @@ public class Activity {
     public Activity() {
     }
 
-    public Activity(Long id, String name, OffsetDateTime date, Long producedEnergy, Long savedCO2, ActivityType activityType, User user) {
+    public Activity(Long id, String name, LocalDateTime date, Long producedEnergy, Long savedCO2, ActivityType activityType, User user) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -64,11 +67,11 @@ public class Activity {
         this.name = name;
     }
 
-    public OffsetDateTime getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(OffsetDateTime date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 

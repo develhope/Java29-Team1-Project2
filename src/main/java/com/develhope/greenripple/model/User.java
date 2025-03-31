@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import java.util.ArrayList;
 import java.util.List;
 
 // Entity representing a User
@@ -51,8 +50,11 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserReward> redeemedRewards;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Activity> activities;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserProject> votedProjects;
 
     // Constructors
     public User() {}
@@ -131,5 +133,29 @@ public class User {
 
     public void setDeleted(boolean deleted) {
         isDeleted = deleted;
+    }
+
+    public List<UserProject> getVotedProjects() {
+        return votedProjects;
+    }
+
+    public void setVotedProjects(List<UserProject> votedProjects) {
+        this.votedProjects = votedProjects;
+    }
+
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
+    }
+
+    public List<UserReward> getRedeemedRewards() {
+        return redeemedRewards;
+    }
+
+    public void setRedeemedRewards(List<UserReward> redeemedRewards) {
+        this.redeemedRewards = redeemedRewards;
     }
 }

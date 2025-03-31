@@ -26,6 +26,10 @@ public class UserRewardController {
             // Attempt to redeem the reward
             Optional<UserReward> userReward = userRewardService.redeemReward(userId, rewardId);
 
+            if (userReward.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
             // Return the redeemed reward with HTTP 200 (OK)
             return ResponseEntity.ok(userReward.get());
         } catch (RuntimeException e) {

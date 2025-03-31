@@ -69,8 +69,8 @@ public class UserRewardService {
         reward.setQuantity(reward.getQuantity() - 1);
 
         // Create a new UserReward entry (the redeemedAt timestamp is automatically set)
-        UserReward userReward = new UserReward(user, reward);
-        userRewardRepository.save(userReward);
+        UserReward userReward = userRewardRepository.save(new UserReward(user, reward));
+
 
         // Save the updated user and reward entities to the database
         userRepository.save(user);
