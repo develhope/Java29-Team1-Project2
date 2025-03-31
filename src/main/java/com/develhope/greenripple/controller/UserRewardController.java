@@ -1,5 +1,6 @@
 package com.develhope.greenripple.controller;
 
+import com.develhope.greenripple.model.User;
 import com.develhope.greenripple.model.UserReward;
 import com.develhope.greenripple.service.UserRewardService;
 import org.springframework.beans.factory.annotation.Autowired;

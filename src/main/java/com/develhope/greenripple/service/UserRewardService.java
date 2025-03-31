@@ -32,7 +32,7 @@ public class UserRewardService {
      * @return An optional containing the redeemed reward details or empty if conditions are not met.
      * @throws RuntimeException If the user or reward is not found, or if redemption conditions are not met.
      */
-    public Optional<UserReward> redeemReward(Long userId, Long rewardId) {
+    public Optional<UserReward> redeemReward(Long userId, Long rewardId) throws RuntimeException {
         // Retrieve the user and reward from the database
         Optional<User> userOptional = userRepository.findById(userId);
         Optional<Reward> rewardOptional = rewardRepository.findById(rewardId);
@@ -86,6 +86,6 @@ public class UserRewardService {
      * @return A list of all rewards redeemed by the user.
      */
     public List<UserReward> getUserRewards(Long userId) {
-        return userRewardRepository.findByUserId(userId);
+        return userRewardRepository.findByUserIdOrderByRedeemedAtDesc(userId);
     }
 }

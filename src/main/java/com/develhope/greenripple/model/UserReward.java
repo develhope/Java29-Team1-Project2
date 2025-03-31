@@ -30,7 +30,6 @@ public class UserReward {
     public UserReward(User user, Reward reward) {
         this.user = user;
         this.reward = reward;
-        this.redeemedAt = LocalDateTime.now(); // Set the redemption time when the object is created
     }
 
     public Long getId() {
