@@ -1,7 +1,9 @@
 package com.develhope.greenripple.controller;
 
 import com.develhope.greenripple.model.Activity;
+import com.develhope.greenripple.model.googleMaps.GoogleMapsRoute;
 import com.develhope.greenripple.service.ActivityService;
+import com.develhope.greenripple.service.maps.GoogleMapsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +19,30 @@ public class ActivityController {
     @Autowired
     private ActivityService activityService;
 
+    @Autowired
+    private GoogleMapsService googleMapsService;
+
     // Create a new Activity
     @PostMapping("/create-for-user/{userId}")
-    public ResponseEntity<Activity> createActivity(@PathVariable Long userId, @RequestBody Activity activity) {
+    public ResponseEntity<Activity> createActivity(
+            @PathVariable Long userId,
+            @RequestParam(required = false) Double startLatitude,
+            @RequestParam(required = false) Double startLongitude,
+            @RequestParam(required = false) Double endLatitude,
+            @RequestParam(required = false) Double endLongitude,
+            @RequestBody Activity activity) {
+
+        try {
+
+            // Calculate and set saved CO2
+            GoogleMapsRoute route = googleMapsService.calculateRoute(startLatitude, startLongitude, endLatitude, endLongitude);
+            activity.setSavedCO2Grams(route.getCarCO2Grams());
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        // Save activity
         Optional<Activity> createdActivity = activityService.createActivity(userId, activity);
 
         if (createdActivity.isPresent()) {

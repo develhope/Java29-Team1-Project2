@@ -52,7 +52,7 @@ public class ActivityService {
             existingActivity.get().setDate(updatedActivity.getDate());
             existingActivity.get().setActivityType(updatedActivity.getActivityType());
             existingActivity.get().setProducedEnergy(updatedActivity.getProducedEnergy());
-            existingActivity.get().setSavedCO2(updatedActivity.getSavedCO2());
+            existingActivity.get().setSavedCO2Grams(updatedActivity.getSavedCO2Grams());
 
             Activity savedActivity = activityRepository.save(existingActivity.get());
             return Optional.of(savedActivity);

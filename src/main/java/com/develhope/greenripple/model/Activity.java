@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "activities")
@@ -24,10 +23,10 @@ public class Activity {
     private LocalDateTime date;
 
     @Column(name = "produced_energy")
-    private Long producedEnergy;
+    private Double producedEnergy;
 
-    @Column(name = "saved_CO2")
-    private Long savedCO2;
+    @Column(name = "saved_CO2_grams")
+    private Double savedCO2Grams;
 
     @Column(name = "activity_type")
     @Enumerated(value = EnumType.STRING)
@@ -41,12 +40,12 @@ public class Activity {
     public Activity() {
     }
 
-    public Activity(Long id, String name, LocalDateTime date, Long producedEnergy, Long savedCO2, ActivityType activityType, User user) {
+    public Activity(Long id, String name, LocalDateTime date, Double producedEnergy, Double savedCO2, ActivityType activityType, User user) {
         this.id = id;
         this.name = name;
         this.date = date;
         this.producedEnergy = producedEnergy;
-        this.savedCO2 = savedCO2;
+        this.savedCO2Grams = savedCO2;
         this.activityType = activityType;
         this.user = user;
     }
@@ -75,20 +74,20 @@ public class Activity {
         this.date = date;
     }
 
-    public Long getProducedEnergy() {
+    public Double getProducedEnergy() {
         return producedEnergy;
     }
 
-    public void setProducedEnergy(Long producedEnergy) {
+    public void setProducedEnergy(Double producedEnergy) {
         this.producedEnergy = producedEnergy;
     }
 
-    public Long getSavedCO2() {
-        return savedCO2;
+    public Double getSavedCO2Grams() {
+        return savedCO2Grams;
     }
 
-    public void setSavedCO2(Long savedCO2) {
-        this.savedCO2 = savedCO2;
+    public void setSavedCO2Grams(Double savedCO2Grams) {
+        this.savedCO2Grams = savedCO2Grams;
     }
 
     public ActivityType getActivityType() {
