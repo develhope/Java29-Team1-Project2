@@ -1,6 +1,5 @@
 server:
   port: 9091
-driver-class-name: com.mysql.cj.jdbc.Driver
 spring:
   datasource:
     url: jdbc:mysql://localhost:3307/greenripple
@@ -17,4 +16,4 @@ spring:
 google:
   maps:
     api:
-      key: AIzaSyDRxqnfLNOfPNpM1I1-Vj8lf-jLzpqZPsc
+      key:
