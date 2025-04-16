@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "activities")
@@ -18,10 +18,12 @@ public class Activity {
     @Column(name = "name")
     private String name;
 
+    //Date and time when the activity was performed.
     @Column(name = "date")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime date;
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "Europe/Rome")
+    private OffsetDateTime date = OffsetDateTime.now();
 
+    //Amount of energy produced by the activity.
     @Column(name = "produced_energy")
     private Double producedEnergy;
 
@@ -37,10 +39,11 @@ public class Activity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    //Constructors
     public Activity() {
     }
 
-    public Activity(Long id, String name, LocalDateTime date, Double producedEnergy, Double savedCO2, ActivityType activityType, User user) {
+    public Activity(Long id, String name, OffsetDateTime date, Double producedEnergy, Double savedCO2, ActivityType activityType, User user) {
         this.id = id;
         this.name = name;
         this.date = date;
@@ -50,6 +53,7 @@ public class Activity {
         this.user = user;
     }
 
+    //Getters and Setters
     public Long getId() {
         return id;
     }
@@ -66,11 +70,11 @@ public class Activity {
         this.name = name;
     }
 
-    public LocalDateTime getDate() {
+    public OffsetDateTime getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setDate(OffsetDateTime date) {
         this.date = date;
     }
 

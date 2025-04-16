@@ -1,8 +1,11 @@
 package com.develhope.greenripple.service;
 
+import com.develhope.greenripple.model.Activity;
 import com.develhope.greenripple.model.User;
 import com.develhope.greenripple.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -14,13 +17,34 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ActivityService activityService;
+
     /**
      * Creates a new user (registration).
      * @param user The user object to be created.
      * @return The saved user object.
      */
-    public User createUser(User user) {
-        return userRepository.save(user);
+    /**
+     * Creates a new user (registration).
+     * If the email already exists, it returns an error response.
+     *
+     * @param user The user object to be created.
+     * @return The saved user object or an error response if the email is already taken.
+     */
+    public ResponseEntity<User> createUser(User user) {
+        // Check if a user with the same email already exists
+        Optional<User> existingUser = userRepository.findByEmail(user.getEmail());
+
+        if (existingUser.isPresent()) {
+            // If the email already exists, return a 400 BAD REQUEST with a message
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(null);
+        }
+
+        // If email does not exist, save the new user
+        User savedUser = userRepository.save(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);  // 201 CREATED status
     }
 
     /**
@@ -147,10 +171,10 @@ public class UserService {
             User user = userOptional.get();
             user.setDeleted(true);  // Logically delete by setting isDeleted to true
             userRepository.save(user);
-            return true; // Indica che l'utente è stato eliminato con successo
+            return true; // Indicates that the user was deleted successfully
         }
 
-        return false; // Indica che l'utente non è stato trovato
+        return false; // Indicates that the user was not found
     }
 
     /**
@@ -165,25 +189,28 @@ public class UserService {
             User user = userOptional.get();
             user.setDeleted(false);  // Mark the user as not deleted
             userRepository.save(user);
-            return true; // Indica che l'utente è stato ripristinato con successo
+            return true; // Indicates that the user was restored successfully
         }
 
-        return false; // Indica che l'utente non è stato trovato
+        return false; // Indicates that the user was not found
     }
 
-    // Retrieve a dummy user activity history
-//    public List<String> getUserActivityHistory(Long id) {
-//        // In a real application, activities would be retrieved from a log or a dedicated data source.
-//        return Arrays.asList("Registration", "Login", "Profile Update", "Green Points Added");
-//    }
+    /**
+     * Retrieves the activity history of a user by their ID.
+     * @param userId The ID of the user.
+     * @return A list of activities performed by the user.
+     */
+    public List<Activity> getUserActivityHistory(Long userId) {
+        return activityService.getUserActivityHistory(userId); // Delegate the responsibility to ActivityService
+    }
 
-//    // Return dummy dashboard metrics: CO2 avoided and energy produced
-//    public Map<String, Object> getDashboardMetrics() {
-//        Map<String, Object> dashboard = new HashMap<>();
-//        dashboard.put("CO2Avoided", 1200);      // Dummy value
-//        dashboard.put("EnergyProduced", 3500);    // Dummy value
-//        return dashboard;
-//    }
-
+    /**
+     * Retrieves the dashboard metrics for a user, such as total energy produced and CO2 saved.
+     * @param userId The ID of the user.
+     * @return A map containing the dashboard metrics.
+     */
+    public Map<String, Long> getDashboardMetrics(Long userId) {
+        return activityService.getDashboardMetrics(userId); // Delegate the responsibility to ActivityService
+    }
 
 }

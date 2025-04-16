@@ -1,5 +1,6 @@
 package com.develhope.greenripple.controller;
 
+import com.develhope.greenripple.model.Activity;
 import com.develhope.greenripple.model.User;
 import com.develhope.greenripple.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +19,20 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // Create a new user (registration)
-    @PostMapping("/create")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User createdUser = userService.createUser(user);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    // Endpoint for user registration
+    @PostMapping("/register")
+    public ResponseEntity<String> registerUser(@RequestBody User user) {
+        ResponseEntity<User> response = userService.createUser(user);
+
+        if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
+            // Return a custom message if the email is already taken
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Email is already in use. Please choose a different one.");
+        }
+
+        // Return a success message if user creation is successful
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("User created successfully");
     }
 
     // Get all users, excluding logically deleted users
@@ -125,4 +135,24 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
     }
+
+    // Endpoint to retrieve the activity history of a user
+    @GetMapping("/activity-history/{userId}")
+    public ResponseEntity<List<Activity>> getUserActivityHistory(@PathVariable Long userId) {
+        List<Activity> activities = userService.getUserActivityHistory(userId);
+
+        if (!activities.isEmpty()) {
+            return ResponseEntity.ok(activities);
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    // Endpoint to retrieve the dashboard metrics of a user
+    @GetMapping("/dashboard/{userId}")
+    public ResponseEntity<Map<String, Long>> getDashboardMetrics(@PathVariable Long userId) {
+        Map<String, Long> metrics = userService.getDashboardMetrics(userId);
+        return ResponseEntity.ok(metrics);
+    }
+
 }
