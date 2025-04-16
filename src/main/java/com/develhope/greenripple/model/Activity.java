@@ -17,13 +17,16 @@ public class Activity {
     @Column(name = "name")
     private String name;
 
+    //Date and time when the activity was performed.
     @Column(name = "date")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssXXX", timezone = "UTC")
-    private OffsetDateTime date;
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "Europe/Rome")
+    private OffsetDateTime date = OffsetDateTime.now();
 
+    //Amount of energy produced by the activity.
     @Column(name = "produced_energy")
     private Long producedEnergy;
 
+    //Amount of CO2 saved by performing this activity.
     @Column(name = "saved_CO2")
     private Long savedCO2;
 
@@ -35,6 +38,7 @@ public class Activity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    //Constructors
     public Activity() {
     }
 
@@ -48,6 +52,7 @@ public class Activity {
         this.user = user;
     }
 
+    //Getters and Setters
     public Long getId() {
         return id;
     }

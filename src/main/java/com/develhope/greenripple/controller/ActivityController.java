@@ -1,12 +1,18 @@
 package com.develhope.greenripple.controller;
 
+import com.develhope.greenripple.dto.ActivityDTO;
 import com.develhope.greenripple.model.Activity;
 import com.develhope.greenripple.service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +44,7 @@ public class ActivityController {
 
 
     // Get activity by ID
-    @GetMapping("/get-by-id/{id}")
+    @GetMapping("/get-by-activity-id/{activityId}")
     public ResponseEntity<Activity> getActivityById(@PathVariable Long id) {
         Optional<Activity> activity = activityService.getActivityById(id);
 
@@ -47,6 +53,50 @@ public class ActivityController {
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    // Get activities by user ID
+    @GetMapping("/get-by-user/{userId}")
+    public ResponseEntity<List<Activity>> getActivitiesByUserId(@PathVariable Long userId) {
+        List<Activity> activities = activityService.getActivitiesByUserId(userId);
+
+        if (!activities.isEmpty()) {
+            return ResponseEntity.ok(activities);
+        }
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    // Get activities within a date range
+    @GetMapping("/get-by-date-range")
+    public ResponseEntity<List<ActivityDTO>> getActivitiesByDateRange(
+            @RequestParam("userId") Long userId,
+            @RequestParam("startDate") String startDateStr,
+            @RequestParam("endDate") String endDateStr
+    ) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+            // Parsing a LocalDate
+            LocalDate startDateLocal = LocalDate.parse(startDateStr, formatter);
+            LocalDate endDateLocal = LocalDate.parse(endDateStr, formatter);
+
+            // Conversione in OffsetDateTime (fuso orario Europa/Rome)
+            ZoneId zoneId = ZoneId.of("Europe/Rome");
+            OffsetDateTime startDate = startDateLocal.atStartOfDay(zoneId).toOffsetDateTime();
+            OffsetDateTime endDate = endDateLocal.atTime(23, 59, 59).atZone(zoneId).toOffsetDateTime();
+
+            // Ottieni i DTO
+            List<ActivityDTO> activities = activityService.getActivitiesByUserIdAndDateRange(userId, startDate, endDate);
+
+            if (!activities.isEmpty()) {
+                return ResponseEntity.ok(activities);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
     // Update an existing activity
