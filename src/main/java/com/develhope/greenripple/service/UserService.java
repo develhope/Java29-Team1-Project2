@@ -1,5 +1,6 @@
 package com.develhope.greenripple.service;
 
+import com.develhope.greenripple.enumerations.CarType;
 import com.develhope.greenripple.model.Activity;
 import com.develhope.greenripple.model.User;
 import com.develhope.greenripple.repository.UserRepository;
@@ -88,12 +89,68 @@ public class UserService {
             existingUser.get().setEmail(updatedUser.getEmail());
             existingUser.get().setPassword(updatedUser.getPassword());
             existingUser.get().setCity(updatedUser.getCity());
+            existingUser.get().setCarType(updatedUser.getCarType());
 
             User userSaved = userRepository.save(existingUser.get());
             return Optional.of(userSaved);
         }
         return Optional.empty();
     }
+
+    /**
+     * Updates the car type of a user and grants green points as a bonus
+     * depending on the type of transition (e.g., from Diesel to Electric).
+     *
+     * @param userId  The ID of the user to update.
+     * @param carType The new car type to set.
+     * @return An Optional containing the updated user if found, otherwise Optional.empty().
+     */
+    public Optional<User> updateCarType(Long userId, CarType carType) {
+        Optional<User> existingUser = userRepository.findById(userId);
+
+        if (existingUser.isPresent()) {
+            User user = existingUser.get();
+            CarType previousCarType = user.getCarType();  // Store previous car type
+
+            // Initialize bonus points
+            int bonusPoints = 0;
+
+            // Check if the car type has changed
+            if (previousCarType != carType) {
+                // Assign bonus points based on the type of transition
+                if (previousCarType == CarType.DIESEL && carType == CarType.ELECTRIC) {
+                    bonusPoints = 200; // High bonus for switching from Diesel to Electric
+                } else if (previousCarType == CarType.DIESEL && carType == CarType.HYBRID) {
+                    bonusPoints = 150; // Medium bonus for switching from Diesel to Hybrid
+                } else if (previousCarType == CarType.GASOLINE && carType == CarType.HYBRID) {
+                    bonusPoints = 100; // Small bonus for switching from Gasoline to Hybrid
+                } else if (previousCarType == CarType.GASOLINE && carType == CarType.ELECTRIC) {
+                    bonusPoints = 250; // High bonus for switching from Gasoline to Electric
+                } else if (previousCarType == CarType.GASOLINE && carType == CarType.LPG) {
+                    bonusPoints = 120; // Bonus for switching from Gasoline to LPG
+                } else if (previousCarType == CarType.DIESEL && carType == CarType.LPG) {
+                    bonusPoints = 130; // Bonus for switching from Diesel to LPG
+                } else if (previousCarType == CarType.LPG && carType == CarType.HYBRID) {
+                    bonusPoints = 100; // Bonus for switching from LPG to Hybrid
+                } else if (previousCarType == CarType.LPG && carType == CarType.ELECTRIC) {
+                    bonusPoints = 150; // High bonus for switching from LPG to Electric
+                }
+            }
+
+            // Update car type
+            user.setCarType(carType);
+
+            // Add bonus points to user's greenPoints
+            user.setGreenPoints(user.getGreenPoints() + bonusPoints);
+
+            // Save updated user
+            User savedUser = userRepository.save(user);
+            return Optional.of(savedUser);
+        }
+
+        return Optional.empty(); // User not found
+    }
+
 
     /**
      * Increases a user's green points.

@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -75,6 +76,30 @@ public class UserController {
             return ResponseEntity.ok(optionalUser.get());
         }
 
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+
+    // Update a user's car type
+    @PutMapping("/update-car-type/{id}")
+    public ResponseEntity<?> updateCarType(@PathVariable Long id, @RequestBody User userWithNewCarType) {
+        // Check that carType is not null
+        if (userWithNewCarType.getCarType() == null) {
+            // Return an error with a message in the response body
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "The car type (carType) cannot be null.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+
+        // Call the service to update the car type
+        Optional<User> optionalUser = userService.updateCarType(id, userWithNewCarType.getCarType());
+
+        // If the user exists and the update was successful
+        if (optionalUser.isPresent()) {
+            return ResponseEntity.ok(optionalUser.get());
+        }
+
+        // If the user with the specified ID was not found
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 

@@ -1,6 +1,5 @@
 package com.develhope.greenripple.service;
 
-import com.develhope.greenripple.dto.ActivityDTO;
 import com.develhope.greenripple.model.Activity;
 import com.develhope.greenripple.model.User;
 import com.develhope.greenripple.repository.ActivityRepository;
@@ -130,7 +129,7 @@ public class ActivityService {
         // Calculates the total energy produced and CO2 saved using a for loop
         for (Activity activity : activities) {
             totalEnergyProduced += activity.getProducedEnergy();
-            totalCO2Saved += activity.getSavedCO2();
+            totalCO2Saved += activity.getSavedCO2Grams();
         }
 
         // Use a HashMap to collect the metrics
@@ -141,28 +140,11 @@ public class ActivityService {
         return metrics; // Returns the metrics map
     }
 
-    public List<ActivityDTO> getActivitiesByUserIdAndDateRange(Long userId, OffsetDateTime startDate, OffsetDateTime endDate) {
+    public List<Activity> getActivitiesByUserIdAndDateRange(Long userId, OffsetDateTime startDate, OffsetDateTime endDate) {
         List<Activity> activities = activityRepository.findByUserIdAndDateBetween(userId, startDate, endDate);
 
-        List<ActivityDTO> activityDTOs = new ArrayList<>();
-        for (Activity activity : activities) {
-            activityDTOs.add(mapToDTO(activity));
-        }
-
-        return activityDTOs;
+        return activities;
     }
 
-    private ActivityDTO mapToDTO(Activity activity) {
-        return new ActivityDTO(
-                activity.getId(),
-                activity.getName(),
-                activity.getDate(),
-                activity.getProducedEnergy(),
-                activity.getSavedCO2(),
-                activity.getActivityType(),
-                activity.getUser().getId(),
-                activity.getUser().getName()
-        );
-    }
 
 }

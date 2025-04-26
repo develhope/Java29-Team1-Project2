@@ -1,5 +1,6 @@
 package com.develhope.greenripple.model.googleMaps;
 
+import com.develhope.greenripple.enumerations.CarType;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -30,8 +31,8 @@ public class GoogleMapsRoute {
     }
 
     // Grams of CO2 emitted by a car
-    public Double getCarCO2Grams() {
-        return distanceMeters * 0.165;
+    public Double getCarCO2Grams(CarType carType) {
+        return distanceMeters * carType.getCo2PerKm()/1000;
     }
 
 }

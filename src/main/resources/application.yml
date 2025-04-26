@@ -2,9 +2,9 @@ server:
   port: 9091
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3307/greenripple
+    url: jdbc:mysql://localhost:3306/greenripple
     username: root
-    password: password
+    password: 4864
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
