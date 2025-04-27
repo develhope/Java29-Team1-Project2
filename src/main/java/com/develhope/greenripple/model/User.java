@@ -37,10 +37,10 @@ public class User {
     private String city;
 
     @Column(name = "green_points")
-    private int greenPoints = 0;
+    private Double greenPoints = 0.0;
 
     @Column(name = "votes")
-    private int votes = 0;
+    private Double votes = 0.0;
 
     // Add a field to indicate if the user is logically deleted
     @Column(name = "is_deleted", nullable = false)
@@ -59,7 +59,7 @@ public class User {
     // Constructors
     public User() {}
 
-    public User(Long id, String name, String email, String password, String city, int greenPoints, int votes, boolean isDeleted) {
+    public User(Long id, String name, String email, String password, String city, Double greenPoints, Double votes, boolean isDeleted) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -68,6 +68,15 @@ public class User {
         this.greenPoints = greenPoints;
         this.votes = votes;
         this.isDeleted = isDeleted;
+    }
+
+    // Methods
+    public void increaseGreenPoints(Double greenPoints) {
+        this.greenPoints += greenPoints;
+    }
+
+    public void increaseVotes(Double votes) {
+        this.votes += votes;
     }
 
     // Getters and Setters
@@ -103,19 +112,19 @@ public class User {
         this.password = password;
     }
 
-    public int getGreenPoints() {
+    public Double getGreenPoints() {
         return greenPoints;
     }
 
-    public void setGreenPoints(int greenPoints) {
+    public void setGreenPoints(Double greenPoints) {
         this.greenPoints = greenPoints;
     }
 
-    public int getVotes() {
+    public Double getVotes() {
         return votes;
     }
 
-    public void setVotes(int votes) {
+    public void setVotes(Double votes) {
         this.votes = votes;
     }
 

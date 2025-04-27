@@ -92,7 +92,7 @@ public class ActivityController {
 
     // Get activities within a date range
     @GetMapping("/get-by-date-range")
-    public ResponseEntity<List<ActivityDTO>> getActivitiesByDateRange(
+    public ResponseEntity<List<Activity>> getActivitiesByDateRange(
             @RequestParam("userId") Long userId,
             @RequestParam("startDate") String startDateStr,
             @RequestParam("endDate") String endDateStr
@@ -110,7 +110,7 @@ public class ActivityController {
             OffsetDateTime endDate = endDateLocal.atTime(23, 59, 59).atZone(zoneId).toOffsetDateTime();
 
             // Ottieni i DTO
-            List<ActivityDTO> activities = activityService.getActivitiesByUserIdAndDateRange(userId, startDate, endDate);
+            List<Activity> activities = activityService.getActivitiesByUserIdAndDateRange(userId, startDate, endDate);
 
             if (!activities.isEmpty()) {
                 return ResponseEntity.ok(activities);

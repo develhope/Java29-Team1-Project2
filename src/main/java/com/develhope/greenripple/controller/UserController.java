@@ -21,7 +21,7 @@ public class UserController {
 
     // Endpoint for user registration
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody User user) {
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
         ResponseEntity<User> response = userService.createUser(user);
 
         if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
@@ -31,8 +31,7 @@ public class UserController {
         }
 
         // Return a success message if user creation is successful
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body("User created successfully");
+        return response;
     }
 
     // Get all users, excluding logically deleted users
