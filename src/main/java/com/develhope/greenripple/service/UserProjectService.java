@@ -47,7 +47,7 @@ public class UserProjectService {
         Project project = projectOptional.get();
 
         // Check if the user has votes left
-        if (user.getVotes() <= 0) {
+        if (user.getVotes() < 1) {
             throw new RuntimeException("No votes left!");
         }
 

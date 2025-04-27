@@ -20,8 +20,8 @@ public class UserProjectController {
     private UserProjectService userProjectService;
 
     // Endpoint to vote a projects for a user
-    @PostMapping("/vote/{userId}/{rewardId}")
-    public ResponseEntity<?> voteProject(@PathVariable Long userId, @PathVariable Long rewardId) {
+    @PostMapping("/vote")
+    public ResponseEntity<?> voteProject(@RequestParam Long userId, @RequestParam Long rewardId) {
         try {
             // Attempt to vote the project
             Optional<UserProject> userProject = userProjectService.voteProject(userId, rewardId);

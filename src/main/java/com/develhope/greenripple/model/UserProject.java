@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "user_projects")
@@ -24,8 +24,8 @@ public class UserProject {
     private Project project;
 
     @Column(name = "voted_at")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime votedAt = LocalDateTime.now();
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "Europe/Rome")
+    private OffsetDateTime votedAt = OffsetDateTime.now();
 
     public UserProject() {
     }
@@ -59,11 +59,11 @@ public class UserProject {
         this.project = project;
     }
 
-    public LocalDateTime getVotedAt() {
+    public OffsetDateTime getVotedAt() {
         return votedAt;
     }
 
-    public void setVotedAt(LocalDateTime votedAt) {
+    public void setVotedAt(OffsetDateTime votedAt) {
         this.votedAt = votedAt;
     }
 
