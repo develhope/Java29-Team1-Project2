@@ -1,5 +1,6 @@
 package com.develhope.greenripple.model;
 
+import com.develhope.greenripple.enumerations.CarType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -37,6 +38,10 @@ public class User {
     @Column(name = "city")
     private String city;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "car_type")
+    private CarType carType;
+
     @Column(name = "green_points")
     private Double greenPoints = 0.0;
 
@@ -63,12 +68,13 @@ public class User {
     // Constructors
     public User() {}
 
-    public User(Long id, String name, String email, String password, String city, Double greenPoints, Double votes, boolean isDeleted) {
+    public User(Long id, String name, String email, String password, String city, Double greenPoints, Double votes, CarType carType, boolean isDeleted) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.city = city;
+        this.carType = carType;
         this.greenPoints = greenPoints;
         this.votes = votes;
         this.isDeleted = isDeleted;
@@ -138,6 +144,14 @@ public class User {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public CarType getCarType() {
+        return carType;
+    }
+
+    public void setCarType(CarType carType) {
+        this.carType = carType;
     }
 
     public boolean isDeleted() {

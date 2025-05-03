@@ -1,6 +1,6 @@
 package com.develhope.greenripple.controller;
 
-import com.develhope.greenripple.dto.ActivityDTO;
+
 import com.develhope.greenripple.model.Activity;
 import com.develhope.greenripple.model.googleMaps.GoogleMapsRoute;
 import com.develhope.greenripple.service.ActivityService;
@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -109,7 +108,6 @@ public class ActivityController {
             OffsetDateTime startDate = startDateLocal.atStartOfDay(zoneId).toOffsetDateTime();
             OffsetDateTime endDate = endDateLocal.atTime(23, 59, 59).atZone(zoneId).toOffsetDateTime();
 
-            // Ottieni i DTO
             List<Activity> activities = activityService.getActivitiesByUserIdAndDateRange(userId, startDate, endDate);
 
             if (!activities.isEmpty()) {
