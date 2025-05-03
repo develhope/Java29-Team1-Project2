@@ -14,7 +14,6 @@ public class UserProject {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -24,7 +23,6 @@ public class UserProject {
     private Project project;
 
     @Column(name = "voted_at")
-    @JsonFormat(pattern = "dd/MM/yyyy HH:mm", timezone = "Europe/Rome")
     private OffsetDateTime votedAt = OffsetDateTime.now();
 
     public UserProject() {

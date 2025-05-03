@@ -1,5 +1,6 @@
 package com.develhope.greenripple.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -47,12 +48,15 @@ public class User {
     private boolean isDeleted = false;  // Default is false (not deleted)
 
    // One-to-Many relationship: A user can redeem multiple rewards
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserReward> redeemedRewards;
+    @JsonIgnore
+    @OneToMany(mappedBy = "redeemedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Reward> redeemedRewards;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Activity> activities;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserProject> votedProjects;
 
@@ -160,11 +164,11 @@ public class User {
         this.activities = activities;
     }
 
-    public List<UserReward> getRedeemedRewards() {
+    public List<Reward> getRedeemedRewards() {
         return redeemedRewards;
     }
 
-    public void setRedeemedRewards(List<UserReward> redeemedRewards) {
+    public void setRedeemedRewards(List<Reward> redeemedRewards) {
         this.redeemedRewards = redeemedRewards;
     }
 }

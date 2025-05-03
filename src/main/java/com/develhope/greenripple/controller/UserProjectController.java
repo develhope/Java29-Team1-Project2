@@ -1,7 +1,6 @@
 package com.develhope.greenripple.controller;
 
 import com.develhope.greenripple.model.UserProject;
-import com.develhope.greenripple.model.UserReward;
 import com.develhope.greenripple.service.UserProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

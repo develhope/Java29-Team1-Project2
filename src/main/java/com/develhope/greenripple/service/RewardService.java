@@ -1,8 +1,8 @@
 package com.develhope.greenripple.service;
 
 import com.develhope.greenripple.model.Reward;
-import com.develhope.greenripple.model.User;
 import com.develhope.greenripple.repository.RewardRepository;
+import com.develhope.greenripple.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +13,9 @@ public class RewardService {
 
     @Autowired
     private RewardRepository rewardRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     /**
      * Create a new Reward and save it to the database.
@@ -64,7 +67,6 @@ public class RewardService {
             existingReward.get().setName(updatedReward.getName());
             existingReward.get().setDescription(updatedReward.getDescription());
             existingReward.get().setRequiredGreenPoints(updatedReward.getRequiredGreenPoints());
-            existingReward.get().setQuantity(updatedReward.getQuantity());
 
             // Save the updated reward
             Reward rewardSaved = rewardRepository.save(existingReward.get());

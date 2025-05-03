@@ -1,7 +1,6 @@
 package com.develhope.greenripple.repository;
 
 import com.develhope.greenripple.model.UserProject;
-import com.develhope.greenripple.model.UserReward;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

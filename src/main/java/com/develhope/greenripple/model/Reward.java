@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "rewards")
@@ -25,25 +23,22 @@ public class Reward {
     private String description;
 
     @Column(name = "required_green_points", nullable = false)
-    private int requiredGreenPoints;
-
-    @Column(name = "quantity", nullable = false)
-    private int quantity;
+    private Integer requiredGreenPoints;
 
     // One-to-Many relationship: A reward can be redeemed multiple times by different users
     @JsonIgnore
-    @OneToMany(mappedBy = "reward", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserReward> redeemedByUsers;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "redeemed_by")
+    private User redeemedBy;
 
     // Constructors
     public Reward() {}
 
-    public Reward(Long id, String name, String description, int requiredGreenPoints, int quantity) {
+    public Reward(Long id, String name, String description, int requiredGreenPoints) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.requiredGreenPoints = requiredGreenPoints;
-        this.quantity = quantity;
     }
 
     // Getters and Setters
@@ -71,19 +66,12 @@ public class Reward {
         this.description = description;
     }
 
-    public int getRequiredGreenPoints() {
+    public Integer getRequiredGreenPoints() {
         return requiredGreenPoints;
     }
 
-    public void setRequiredGreenPoints(int requiredGreenPoints) {
+    public void setRequiredGreenPoints(Integer requiredGreenPoints) {
         this.requiredGreenPoints = requiredGreenPoints;
     }
 
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
 }
