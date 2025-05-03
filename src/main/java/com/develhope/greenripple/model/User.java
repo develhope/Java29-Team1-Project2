@@ -49,7 +49,7 @@ public class User {
 
    // One-to-Many relationship: A user can redeem multiple rewards
     @JsonIgnore
-    @OneToMany(mappedBy = "redeemedBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "redeemedBy", cascade = CascadeType.ALL)
     private List<Reward> redeemedRewards;
 
     @JsonIgnore

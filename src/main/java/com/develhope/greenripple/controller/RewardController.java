@@ -68,4 +68,22 @@ public class RewardController {
         rewardService.deleteReward(id);
         return ResponseEntity.ok("Reward deleted successfully");
     }
+
+    @PutMapping("/redeem")
+    public ResponseEntity<?> redeemReward(
+            @RequestParam Long userId,
+            @RequestParam Long rewardId
+    ) {
+        try {
+
+            Reward reward = rewardService.redeemReward(userId, rewardId);
+            return ResponseEntity.ok(reward);
+
+        } catch (Exception e) {
+
+            System.out.println(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+
+        }
+    }
 }

@@ -29,9 +29,9 @@ public class ActivityController {
     private GoogleMapsService googleMapsService;
 
     // Create a new Activity
-    @PostMapping("/create-for-user/{userId}")
+    @PostMapping("/create")
     public ResponseEntity<Activity> createActivity(
-            @PathVariable Long userId,
+            @RequestParam Long userId,
             @RequestParam(required = false) Double startLatitude,
             @RequestParam(required = false) Double startLongitude,
             @RequestParam(required = false) Double endLatitude,

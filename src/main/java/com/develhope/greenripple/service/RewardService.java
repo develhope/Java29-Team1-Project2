@@ -1,6 +1,10 @@
 package com.develhope.greenripple.service;
 
+import com.develhope.greenripple.exceptions.reward.RewardNotAvailableException;
+import com.develhope.greenripple.exceptions.reward.RewardNotFoundException;
+import com.develhope.greenripple.exceptions.user.UserNotFoundException;
 import com.develhope.greenripple.model.Reward;
+import com.develhope.greenripple.model.User;
 import com.develhope.greenripple.repository.RewardRepository;
 import com.develhope.greenripple.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,5 +85,31 @@ public class RewardService {
      */
     public void deleteReward(Long id) {
         rewardRepository.deleteById(id);
+    }
+
+    /**
+     * Redeems a reward by its ID
+     * @param userId is the ID of the user who redeems the reward
+     * @param rewardId is the ID of the reward to redeem
+     * @return the redeemed reward
+     */
+    public Reward redeemReward(Long userId, Long rewardId) {
+        Optional<User> user = userRepository.findById(userId);
+        Optional<Reward> reward = rewardRepository.findById(rewardId);
+
+        if (user.isEmpty()) {
+            throw new UserNotFoundException(userId);
+        }
+
+        if (reward.isEmpty()) {
+            throw new RewardNotFoundException(rewardId);
+        }
+
+        if (reward.get().getRedeemedBy() != null) {
+            throw new RewardNotAvailableException("Reward with id " + rewardId + " has already been redeemed");
+        }
+
+        reward.get().setRedeemedBy(user.get());
+        return rewardRepository.save(reward.get());
     }
 }

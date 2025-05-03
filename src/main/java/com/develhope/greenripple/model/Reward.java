@@ -26,7 +26,6 @@ public class Reward {
     private Integer requiredGreenPoints;
 
     // One-to-Many relationship: A reward can be redeemed multiple times by different users
-    @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "redeemed_by")
     private User redeemedBy;
@@ -74,4 +73,11 @@ public class Reward {
         this.requiredGreenPoints = requiredGreenPoints;
     }
 
+    public User getRedeemedBy() {
+        return redeemedBy;
+    }
+
+    public void setRedeemedBy(User redeemedBy) {
+        this.redeemedBy = redeemedBy;
+    }
 }
