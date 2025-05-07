@@ -29,7 +29,7 @@ public class ActivityController {
 
     // Create a new Activity
     @PostMapping("/create")
-    public ResponseEntity<Activity> createActivity(
+    public ResponseEntity<?> createActivity(
             @RequestParam Long userId,
             @RequestParam(required = false) Double startLatitude,
             @RequestParam(required = false) Double startLongitude,
@@ -54,7 +54,8 @@ public class ActivityController {
             return new ResponseEntity<>(createdActivity.get(), HttpStatus.CREATED);
         }
 
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("User with ID '" + userId + "' not found. Cannot create activity.");
     }
 
     // Get all activities
@@ -67,31 +68,33 @@ public class ActivityController {
 
     // Get activity by ID
     @GetMapping("/get-by-activity-id/{activityId}")
-    public ResponseEntity<Activity> getActivityById(@PathVariable Long id) {
+    public ResponseEntity<?> getActivityById(@PathVariable("activityId") Long id) {
         Optional<Activity> activity = activityService.getActivityById(id);
 
         if (activity.isPresent()) {
             return ResponseEntity.ok(activity.get());
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Activity with ID '" + id + "' not found.");
     }
 
     // Get activities by user ID
     @GetMapping("/get-by-user/{userId}")
-    public ResponseEntity<List<Activity>> getActivitiesByUserId(@PathVariable Long userId) {
+    public  ResponseEntity<?> getActivitiesByUserId(@PathVariable Long userId) {
         List<Activity> activities = activityService.getActivitiesByUserId(userId);
 
         if (!activities.isEmpty()) {
             return ResponseEntity.ok(activities);
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("No activities found for user ID '" + userId + "'.");
     }
 
     // Get activities within a date range
     @GetMapping("/get-by-date-range")
-    public ResponseEntity<List<Activity>> getActivitiesByDateRange(
+    public ResponseEntity<?> getActivitiesByDateRange(
             @RequestParam("userId") Long userId,
             @RequestParam("startDate") String startDateStr,
             @RequestParam("endDate") String endDateStr
@@ -113,7 +116,8 @@ public class ActivityController {
             if (!activities.isEmpty()) {
                 return ResponseEntity.ok(activities);
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("No activities found for user ID '" + userId + "' in the given date range.");
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -122,14 +126,20 @@ public class ActivityController {
 
     // Update an existing activity
     @PutMapping("/update/{id}")
-    public ResponseEntity<Activity> updateActivity(@PathVariable Long id, @RequestBody Activity updatedActivity) {
-        Optional<Activity> optionalActivity = activityService.updateActivity(id, updatedActivity);
+    public ResponseEntity<?> updateActivity(@PathVariable Long id, @RequestBody Activity updatedActivity) {
+        try {
+            Optional<Activity> optionalActivity = activityService.updateActivity(id, updatedActivity);
 
-        if (optionalActivity.isPresent()) {
-            return ResponseEntity.ok(optionalActivity.get());
+            if (optionalActivity.isPresent()) {
+                return ResponseEntity.ok(optionalActivity.get());
+            }
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Activity with ID '" + id + "' not found.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Invalid activity type: " + e.getMessage());
         }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
 

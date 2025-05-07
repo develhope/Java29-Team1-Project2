@@ -1,5 +1,6 @@
 package com.develhope.greenripple.service;
 
+import com.develhope.greenripple.enumerations.ActivityType;
 import com.develhope.greenripple.model.Activity;
 import com.develhope.greenripple.model.User;
 import com.develhope.greenripple.repository.ActivityRepository;
@@ -99,6 +100,12 @@ public class ActivityService {
         Optional<Activity> existingActivity = activityRepository.findById(id);
 
         if (existingActivity.isPresent()) {
+            // Validate the activity type before updating
+            if (updatedActivity.getActivityType() == null ||
+                    Arrays.stream(ActivityType.values())
+                            .noneMatch(type -> type.equals(updatedActivity.getActivityType()))) {
+                throw new IllegalArgumentException("Invalid activity type: " + updatedActivity.getActivityType());
+            }
             existingActivity.get().setName(updatedActivity.getName());
             existingActivity.get().setDate(updatedActivity.getDate());
             existingActivity.get().setActivityType(updatedActivity.getActivityType());

@@ -67,6 +67,10 @@ public class RewardService {
 
         // If the reward exists, update its fields
         if (existingReward.isPresent()) {
+            // Check if requiredGreenPoints is negative
+            if (updatedReward.getRequiredGreenPoints() == null || updatedReward.getRequiredGreenPoints() < 0) {
+                throw new IllegalArgumentException("Required green points must be a positive number");
+            }
 
             existingReward.get().setName(updatedReward.getName());
             existingReward.get().setDescription(updatedReward.getDescription());
@@ -84,32 +88,68 @@ public class RewardService {
      * @param id The ID of the reward to be deleted.
      */
     public void deleteReward(Long id) {
+        if (!rewardRepository.existsById(id)) {
+            throw new RewardNotFoundException(id);
+        }
         rewardRepository.deleteById(id);
     }
 
     /**
-     * Redeems a reward by its ID
-     * @param userId is the ID of the user who redeems the reward
-     * @param rewardId is the ID of the reward to redeem
-     * @return the redeemed reward
+     * Redeems a reward for a specific user by its ID.
+     *
+     * This method checks if the user and reward exist, ensures the reward
+     * has not already been redeemed, and verifies that the user has enough
+     * green points to redeem the reward. If all conditions are met, it deducts
+     * the required points from the user and marks the reward as redeemed.
+     *
+     * @param userId    the ID of the user attempting to redeem the reward
+     * @param rewardId  the ID of the reward to be redeemed
+     * @return the redeemed Reward entity
+     * @throws UserNotFoundException        if the user with the given ID does not exist
+     * @throws RewardNotFoundException      if the reward with the given ID does not exist
+     * @throws RewardNotAvailableException  if the reward has already been redeemed or
+     *                                      the user does not have enough green points
      */
     public Reward redeemReward(Long userId, Long rewardId) {
-        Optional<User> user = userRepository.findById(userId);
-        Optional<Reward> reward = rewardRepository.findById(rewardId);
+        Optional<User> userOpt = userRepository.findById(userId);
+        Optional<Reward> rewardOpt = rewardRepository.findById(rewardId);
 
-        if (user.isEmpty()) {
+        // Check if the user exists
+        if (userOpt.isEmpty()) {
             throw new UserNotFoundException(userId);
         }
 
-        if (reward.isEmpty()) {
+        // Check if the reward exists
+        if (rewardOpt.isEmpty()) {
             throw new RewardNotFoundException(rewardId);
         }
 
-        if (reward.get().getRedeemedBy() != null) {
+        User user = userOpt.get();
+        Reward reward = rewardOpt.get();
+
+        // Check if the reward has already been redeemed
+        if (reward.getRedeemedBy() != null) {
             throw new RewardNotAvailableException("Reward with id " + rewardId + " has already been redeemed");
         }
 
-        reward.get().setRedeemedBy(user.get());
-        return rewardRepository.save(reward.get());
+        // ✅ Check if the user has enough green points to redeem the reward
+        if (user.getGreenPoints() < reward.getRequiredGreenPoints()) {
+            throw new RewardNotAvailableException(
+                    "User does not have enough green points to redeem this reward. Required: "
+                            + reward.getRequiredGreenPoints() + ", available: " + user.getGreenPoints()
+            );
+        }
+
+        // 🔻  Deduct the required points from the user's green points
+        user.setGreenPoints(user.getGreenPoints() - reward.getRequiredGreenPoints());
+
+        // ✅ Mark the reward as redeemed by the user
+        reward.setRedeemedBy(user);
+
+        // 💾 Save the updated user (with updated green points)
+        userRepository.save(user);
+
+        // 💾 Save the redeemed reward
+        return rewardRepository.save(reward);
     }
 }

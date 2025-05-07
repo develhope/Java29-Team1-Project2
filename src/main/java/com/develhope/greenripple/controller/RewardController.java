@@ -1,5 +1,6 @@
 package com.develhope.greenripple.controller;
 
+import com.develhope.greenripple.exceptions.reward.RewardNotFoundException;
 import com.develhope.greenripple.model.Reward;
 import com.develhope.greenripple.service.RewardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +44,10 @@ public class RewardController {
     public ResponseEntity<Reward> getRewardById(@PathVariable Long id) {
         Optional<Reward> reward = rewardService.getRewardById(id);
 
-        if (reward.isPresent()) {
-            return ResponseEntity.ok(reward.get());
+        if (reward.isEmpty()) {
+            throw new RewardNotFoundException(id);
         }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.ok(reward.get());
     }
 
     // Update an existing reward
