@@ -2,6 +2,7 @@ package com.develhope.greenripple.services;
 
 import com.develhope.greenripple.entities.Activity;
 import com.develhope.greenripple.entities.User;
+import com.develhope.greenripple.enumerations.ActivityType;
 import com.develhope.greenripple.repositories.ActivityRepository;
 import com.develhope.greenripple.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

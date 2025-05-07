@@ -3,8 +3,6 @@ package com.develhope.greenripple.controllers;
 import com.develhope.greenripple.entities.Reward;
 import com.develhope.greenripple.services.RewardService;
 import com.develhope.greenripple.exceptions.reward.RewardNotFoundException;
-import com.develhope.greenripple.model.Reward;
-import com.develhope.greenripple.service.RewardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

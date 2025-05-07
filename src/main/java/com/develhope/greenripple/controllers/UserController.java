@@ -1,5 +1,6 @@
 package com.develhope.greenripple.controllers;
 
+import com.develhope.auth.services.AuthenticationService;
 import com.develhope.greenripple.entities.Activity;
 import com.develhope.greenripple.entities.User;
 import com.develhope.greenripple.services.UserService;
@@ -22,6 +23,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private AuthenticationService authenticationService;
 
     // Endpoint for user registration
     @PostMapping("/register")
@@ -213,10 +217,9 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<User> authenticatedUser() {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User currentUser = (User) authentication.getPrincipal();
-
+        User currentUser = authenticationService.currentUser();
         return ResponseEntity.ok(currentUser);
+
     }
 
 }
