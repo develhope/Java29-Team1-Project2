@@ -21,10 +21,10 @@ public class UserProjectController {
 
     // Endpoint to vote a projects for a user
     @PostMapping("/vote")
-    public ResponseEntity<?> voteProject(@RequestParam Long userId, @RequestParam Long rewardId) {
+    public ResponseEntity<?> voteProject(@RequestParam Long userId, @RequestParam Long projectId) {
         try {
             // Attempt to vote the project
-            Optional<UserProject> userProject = userProjectService.voteProject(userId, rewardId);
+            Optional<UserProject> userProject = userProjectService.voteProject(userId, projectId);
 
             if (userProject.isPresent()) {
                 // Return the voted project with HTTP 200 (OK)

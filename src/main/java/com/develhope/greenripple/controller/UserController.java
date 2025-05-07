@@ -45,38 +45,44 @@ public class UserController {
 
     // Get user by email (for login purposes)
     @GetMapping("/get-by-email/{email}")
-    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
+    public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
         Optional<User> user = userService.getUserByEmail(email);
 
         if (user.isPresent()) {
             return ResponseEntity.ok(user.get());
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        // Return a NOT_FOUND with a custom message
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("User with email '" + email + "' not found.");
     }
 
     // Get user by ID (profile retrieval)
     @GetMapping("/get-by-id/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
         Optional<User> user = userService.getUserById(id);
 
         if (user.isPresent()) {
             return ResponseEntity.ok(user.get());
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        // Return NOT_FOUND with custom message
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("User with ID '" + id + "' not found.");
     }
 
     // Update an existing user profile
     @PutMapping("/update/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
         Optional<User> optionalUser = userService.updateUser(id, updatedUser);
 
         if (optionalUser.isPresent()) {
             return ResponseEntity.ok(optionalUser.get());
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        // Return NOT_FOUND with custom message
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("User with ID '" + id + "' not found for update.");
     }
 
 
@@ -99,8 +105,9 @@ public class UserController {
             return ResponseEntity.ok(optionalUser.get());
         }
 
-        // If the user with the specified ID was not found
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        // NOT_FOUND with custom message
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("User with ID '" + id + "' not found for car type update.");
     }
 
     // Increase the green points for a user
@@ -140,13 +147,20 @@ public class UserController {
     // Soft delete a user (set isDeleted to true)
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
-        boolean deleted = userService.deleteUser(id);
+        Optional<User> user = userService.getUserById(id);  // Verifica se l'utente esiste
 
-        if (deleted) {
-            return ResponseEntity.ok("User deleted successfully");
+        if (user.isEmpty()) {
+            // Se l'utente non esiste, restituisci un errore con il messaggio "User not found"
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("User with ID '" + id + "' not found.");
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        // Se l'utente esiste, procedi con l'eliminazione
+        userService.deleteUser(id);
+
+        // Restituisci una risposta di successo
+        return ResponseEntity.status(HttpStatus.OK)
+                .body("User deleted successfully");
     }
 
     // Restore a deleted user (set isDeleted to false)
@@ -163,21 +177,33 @@ public class UserController {
 
     // Endpoint to retrieve the activity history of a user
     @GetMapping("/activity-history/{userId}")
-    public ResponseEntity<List<Activity>> getUserActivityHistory(@PathVariable Long userId) {
-        List<Activity> activities = userService.getUserActivityHistory(userId);
+    public ResponseEntity<?> getUserActivityHistory(@PathVariable Long userId) {
+        Optional<User> user = userService.getUserById(userId);
+        if (user.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("User with ID '" + userId + "' not found.");
+        }
 
+        List<Activity> activities = userService.getUserActivityHistory(userId);
         if (!activities.isEmpty()) {
             return ResponseEntity.ok(activities);
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("No activity history found for user ID '" + userId + "'.");
     }
 
     // Endpoint to retrieve the dashboard metrics of a user
     @GetMapping("/dashboard/{userId}")
     public ResponseEntity<Map<String, Long>> getDashboardMetrics(@PathVariable Long userId) {
         Map<String, Long> metrics = userService.getDashboardMetrics(userId);
-        return ResponseEntity.ok(metrics);
+
+        // Build the response with numeric values (no units)
+        Map<String, Long> formattedMetrics = new HashMap<>();
+        formattedMetrics.put("TotalCO2GramsSaved", metrics.get("TotalCO2Saved"));
+        formattedMetrics.put("TotalJoulesProduced", metrics.get("TotalEnergyProduced"));
+
+        return ResponseEntity.ok(formattedMetrics);
     }
 
 }

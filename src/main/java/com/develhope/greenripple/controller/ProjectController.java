@@ -36,32 +36,42 @@ public class ProjectController {
 
     // Get project by ID
     @GetMapping("/get-by-id/{id}")
-    public ResponseEntity<Project> getProjectById(@PathVariable Long id) {
+    public ResponseEntity<?> getProjectById(@PathVariable Long id) {
         Optional<Project> project = projectService.getProjectById(id);
 
         if (project.isPresent()) {
             return ResponseEntity.ok(project.get());
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Project with ID '" + id + "' not found.");
     }
 
     // Update an existing project
     @PutMapping("/update/{id}")
-    public ResponseEntity<Project> updateProject(@PathVariable Long id, @RequestBody Project updatedProject) {
+    public ResponseEntity<?> updateProject(@PathVariable Long id, @RequestBody Project updatedProject) {
         Optional<Project> optionalProject = projectService.updateProject(id, updatedProject);
 
         if (optionalProject.isPresent()) {
             return ResponseEntity.ok(optionalProject.get());
         }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Project with ID '" + id + "' not found.");
     }
 
     // Delete a project by ID
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteProject(@PathVariable Long id) {
-        projectService.deleteProject(id);
-        return ResponseEntity.ok("Project deleted successfully");
+        Optional<Project> project = projectService.getProjectById(id);
+
+        if (project.isPresent()) {
+            projectService.deleteProject(id);
+            return ResponseEntity.ok("Project with ID '" + id + "' deleted successfully.");
+        }
+
+        // Restituire un messaggio personalizzato se il progetto non viene trovato
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Project with ID '" + id + "' not found.");
     }
 }

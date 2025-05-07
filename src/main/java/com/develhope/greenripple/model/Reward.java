@@ -2,6 +2,8 @@ package com.develhope.greenripple.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.OffsetDateTime;
@@ -16,12 +18,13 @@ public class Reward {
     private Long id;
 
     @Column(name = "name", nullable = false)
-    @NotNull(message = "Reward name cannot be null")
+    @NotBlank(message = "Reward name cannot be blank")
     private String name;
 
     @Column(name = "description")
     private String description;
 
+    @Min(value = 1, message = "Required green points must be at least 1")
     @Column(name = "required_green_points", nullable = false)
     private Integer requiredGreenPoints;
 
