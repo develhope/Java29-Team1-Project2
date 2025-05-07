@@ -1,6 +1,6 @@
 package com.develhope.greenripple.configurations;
 
-import com.develhope.greenripple.repository.UserRepository;
+import com.develhope.greenripple.repositories.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
