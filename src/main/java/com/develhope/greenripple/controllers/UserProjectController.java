@@ -1,5 +1,7 @@
 package com.develhope.greenripple.controllers;
 
+import com.develhope.auth.services.AuthService;
+import com.develhope.greenripple.entities.User;
 import com.develhope.greenripple.entities.UserProject;
 import com.develhope.greenripple.services.UserProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +21,16 @@ public class UserProjectController {
     @Autowired
     private UserProjectService userProjectService;
 
+    @Autowired
+    private AuthService authService;
+
     // Endpoint to vote a projects for a user
     @PostMapping("/vote")
-    public ResponseEntity<?> voteProject(@RequestParam Long userId, @RequestParam Long projectId) {
+    public ResponseEntity<?> voteProject(@RequestParam Long projectId) {
         try {
             // Attempt to vote the project
-            Optional<UserProject> userProject = userProjectService.voteProject(userId, projectId);
+            User currentUser = authService.currentUser();
+            Optional<UserProject> userProject = userProjectService.voteProject(currentUser.getId(), projectId);
 
             if (userProject.isPresent()) {
                 // Return the voted project with HTTP 200 (OK)
@@ -40,9 +46,10 @@ public class UserProjectController {
     }
 
     // Endpoint to retrieve all projects voted by a specific user
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<UserProject>> getUserProjects(@PathVariable Long userId) {
-        List<UserProject> userProjects = userProjectService.getUserProjects(userId);
+    @GetMapping("")
+    public ResponseEntity<List<UserProject>> getUserProjects() {
+        User currentUser = authService.currentUser();
+        List<UserProject> userProjects = userProjectService.getUserProjects(currentUser.getId());
 
         if (userProjects.isEmpty()) {
             // If no projects were found for the user, return a 204 No Content status

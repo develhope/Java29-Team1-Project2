@@ -1,14 +1,12 @@
 package com.develhope.greenripple.controllers;
 
-import com.develhope.auth.services.AuthenticationService;
+import com.develhope.auth.services.AuthService;
 import com.develhope.greenripple.entities.Activity;
 import com.develhope.greenripple.entities.User;
 import com.develhope.greenripple.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -25,22 +23,7 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    private AuthenticationService authenticationService;
-
-    // Endpoint for user registration
-    @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody User user) {
-        ResponseEntity<User> response = userService.createUser(user);
-
-        if (response.getStatusCode() == HttpStatus.BAD_REQUEST) {
-            // Return a custom message if the email is already taken
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Email is already in use. Please choose a different one.");
-        }
-
-        // Return a success message if user creation is successful
-        return response;
-    }
+    private AuthService authService;
 
     // Get all users, excluding logically deleted users
     @GetMapping("/get-all")
@@ -116,39 +99,28 @@ public class UserController {
                 .body("User with ID '" + id + "' not found for car type update.");
     }
 
-    // Increase the green points for a user
-    @PutMapping("/increase-green-points/{id}")
-    public ResponseEntity<User> increaseGreenPoints(@PathVariable Long id, @RequestParam int points) {
-        Optional<User> updatedUser = userService.increaseGreenPoints(id, points);
-
-        if (updatedUser.isPresent()) {
-            return ResponseEntity.ok(updatedUser.get());
-        }
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    }
-
-    // Decrease the green points for a user
-    @PutMapping("/decrease-green-points/{id}")
-    public ResponseEntity<Optional<User>> decreasePoints(@PathVariable Long id, @RequestParam int points) {
-        try {
-            Optional<User> updatedUser = userService.decreaseGreenPoints(id, points);
-            return ResponseEntity.ok(updatedUser);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-    }
-    
-    // Login user with simplified Base64 authentication
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestParam String email, @RequestParam String password) {
-        try {
-            Map<String, String> tokenResponse = userService.login(email, password);
-            return ResponseEntity.ok(tokenResponse);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Invalid credentials"));
-        }
-    }
+//    // Increase the green points for a user
+//    @PutMapping("/increase-green-points/{id}")
+//    public ResponseEntity<User> increaseGreenPoints(@PathVariable Long id, @RequestParam int points) {
+//        Optional<User> updatedUser = userService.increaseGreenPoints(id, points);
+//
+//        if (updatedUser.isPresent()) {
+//            return ResponseEntity.ok(updatedUser.get());
+//        }
+//
+//        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//    }
+//
+//    // Decrease the green points for a user
+//    @PutMapping("/decrease-green-points/{id}")
+//    public ResponseEntity<Optional<User>> decreasePoints(@PathVariable Long id, @RequestParam int points) {
+//        try {
+//            Optional<User> updatedUser = userService.decreaseGreenPoints(id, points);
+//            return ResponseEntity.ok(updatedUser);
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+//        }
+//    }
 
     // Soft delete a user (set isDeleted to true)
     @DeleteMapping("/delete/{id}")
@@ -182,27 +154,30 @@ public class UserController {
     }
 
     // Endpoint to retrieve the activity history of a user
-    @GetMapping("/activity-history/{userId}")
-    public ResponseEntity<?> getUserActivityHistory(@PathVariable Long userId) {
-        Optional<User> user = userService.getUserById(userId);
+    @GetMapping("/activity-history")
+    public ResponseEntity<?> getUserActivityHistory() {
+        User currentUser = authService.currentUser();
+        Optional<User> user = userService.getUserById(currentUser.getId());
         if (user.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("User with ID '" + userId + "' not found.");
+                    .body("User with ID '" + currentUser.getId() + "' not found.");
         }
 
-        List<Activity> activities = userService.getUserActivityHistory(userId);
+        List<Activity> activities = userService.getUserActivityHistory(currentUser.getId());
         if (!activities.isEmpty()) {
             return ResponseEntity.ok(activities);
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body("No activity history found for user ID '" + userId + "'.");
+                .body("No activity history found for user ID '" + currentUser.getId() + "'.");
     }
 
     // Endpoint to retrieve the dashboard metrics of a user
-    @GetMapping("/dashboard/{userId}")
-    public ResponseEntity<Map<String, Long>> getDashboardMetrics(@PathVariable Long userId) {
-        Map<String, Long> metrics = userService.getDashboardMetrics(userId);
+    @GetMapping("/dashboard")
+    public ResponseEntity<Map<String, Long>> getDashboardMetrics() {
+
+        User currentUser = authService.currentUser();
+        Map<String, Long> metrics = userService.getDashboardMetrics(currentUser.getId());
 
         // Build the response with numeric values (no units)
         Map<String, Long> formattedMetrics = new HashMap<>();
@@ -217,7 +192,7 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<User> authenticatedUser() {
 
-        User currentUser = authenticationService.currentUser();
+        User currentUser = authService.currentUser();
         return ResponseEntity.ok(currentUser);
 
     }
