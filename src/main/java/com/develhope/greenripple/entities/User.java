@@ -83,10 +83,12 @@ public class User implements UserDetails {
         this.isDeleted = isDeleted;
     }
 
-    public User(String name, String email, String password) {
+    public User(String name, String email, String password, String city, CarType carType) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.city = city;
+        this.carType = carType;
     }
 
     // Methods

@@ -30,7 +30,7 @@ public class AuthService {
 
     public User signup(RegisterUserDto input) {
 
-        User user = new User(input.getName(), input.getEmail(), passwordEncoder.encode(input.getPassword()));
+        User user = new User(input.getName(), input.getEmail(), passwordEncoder.encode(input.getPassword()), input.getCity(), input.getCarType());
         return userRepository.save(user);
 
     }
