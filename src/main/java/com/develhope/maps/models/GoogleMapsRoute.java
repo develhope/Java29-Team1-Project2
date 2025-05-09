@@ -31,7 +31,7 @@ public class GoogleMapsRoute {
 
     // Grams of CO2 emitted by a car
     public Double getCarCO2Grams() {
-        return distanceMeters * 0.165/1000;
+        return distanceMeters * 0.165;
     }
 
 }
