@@ -1,7 +1,9 @@
 package com.develhope.greenripple.controllers;
 
 
+import com.develhope.auth.services.AuthService;
 import com.develhope.greenripple.entities.Activity;
+import com.develhope.greenripple.entities.User;
 import com.develhope.maps.models.GoogleMapsRoute;
 import com.develhope.greenripple.services.ActivityService;
 import com.develhope.maps.services.GoogleMapsService;
@@ -26,12 +28,14 @@ public class ActivityController {
     private ActivityService activityService;
 
     @Autowired
+    private AuthService authService;
+
+    @Autowired
     private GoogleMapsService googleMapsService;
 
     // Create a new Activity
     @PostMapping("/create")
     public ResponseEntity<?> createActivity(
-            @RequestParam Long userId,
             @RequestParam(required = false) Double startLatitude,
             @RequestParam(required = false) Double startLongitude,
             @RequestParam(required = false) Double endLatitude,
@@ -49,14 +53,15 @@ public class ActivityController {
         }
 
         // Save activity
-        Optional<Activity> createdActivity = activityService.createActivity(userId, activity);
+        User currentUser = authService.currentUser();
+        Optional<Activity> createdActivity = activityService.createActivity(currentUser.getId(), activity);
 
         if (createdActivity.isPresent()) {
             return new ResponseEntity<>(createdActivity.get(), HttpStatus.CREATED);
         }
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body("User with ID '" + userId + "' not found. Cannot create activity.");
+                .body("User with ID '" + currentUser.getId() + "' not found. Cannot create activity.");
     }
 
     // Get all activities

@@ -1,6 +1,8 @@
 package com.develhope.greenripple.services;
 
 import com.develhope.greenripple.entities.Project;
+import com.develhope.greenripple.entities.Reward;
+import com.develhope.greenripple.entities.User;
 import com.develhope.greenripple.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,15 @@ public class ProjectService {
      */
     public Project createProject(Project project) {
         return projectRepository.save(project);
+    }
+
+    /**
+     * Create multiple projects at once and save them to the database.
+     * @param projects A list of projects to be created.
+     * @return The list of saved projects.
+     */
+    public List<Project> createMultipleProjects(List<Project> projects) {
+        return projectRepository.saveAll(projects);
     }
 
     /**

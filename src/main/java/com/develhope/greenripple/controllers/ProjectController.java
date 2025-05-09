@@ -1,6 +1,7 @@
 package com.develhope.greenripple.controllers;
 
 import com.develhope.greenripple.entities.Project;
+import com.develhope.greenripple.entities.Reward;
 import com.develhope.greenripple.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,13 @@ public class ProjectController {
     public ResponseEntity<Project> createProject(@RequestBody Project project) {
         Project createdProject = projectService.createProject(project);
         return new ResponseEntity<>(createdProject, HttpStatus.CREATED);
+    }
+
+    // Create multiple projects at once
+    @PostMapping("/create-multiple")
+    public ResponseEntity<List<Project>> createMultipleRewards(@RequestBody List<Project> projects) {
+        List<Project> createdProjects = projectService.createMultipleProjects(projects);
+        return new ResponseEntity<>(createdProjects, HttpStatus.CREATED);
     }
 
     // Get all projects

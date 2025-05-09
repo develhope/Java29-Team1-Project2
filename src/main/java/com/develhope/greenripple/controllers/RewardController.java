@@ -1,6 +1,8 @@
 package com.develhope.greenripple.controllers;
 
+import com.develhope.auth.services.AuthService;
 import com.develhope.greenripple.entities.Reward;
+import com.develhope.greenripple.entities.User;
 import com.develhope.greenripple.services.RewardService;
 import com.develhope.greenripple.exceptions.reward.RewardNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,9 @@ public class RewardController {
 
     @Autowired
     private RewardService rewardService;
+
+    @Autowired
+    private AuthService authService;
 
     // Create a new reward
     @PostMapping("/create")
@@ -72,12 +77,12 @@ public class RewardController {
 
     @PutMapping("/redeem")
     public ResponseEntity<?> redeemReward(
-            @RequestParam Long userId,
             @RequestParam Long rewardId
     ) {
         try {
 
-            Reward reward = rewardService.redeemReward(userId, rewardId);
+            User currentUser = authService.currentUser();
+            Reward reward = rewardService.redeemReward(currentUser.getId(), rewardId);
             return ResponseEntity.ok(reward);
 
         } catch (Exception e) {
