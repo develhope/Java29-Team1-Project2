@@ -1,4 +1,4 @@
-package com.greenripple.green_ripple;
+package com.develhope.greenripple;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
