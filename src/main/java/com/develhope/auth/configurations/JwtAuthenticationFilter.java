@@ -22,6 +22,7 @@ import java.io.IOException;
 @CrossOrigin
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
     private final HandlerExceptionResolver handlerExceptionResolver;
 
     private final JwtService jwtService;

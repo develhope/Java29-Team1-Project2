@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 @RestController
 public class AuthController {
-    private final JwtService jwtService;
 
+    private final JwtService jwtService;
     private final AuthService authService;
 
     public AuthController(JwtService jwtService, AuthService authService) {
